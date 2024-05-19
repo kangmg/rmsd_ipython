@@ -1,5 +1,15 @@
+IPython compatible RMSD function
+================================
+
+.. raw:: html
+
+    <a href="https://colab.research.google.com/github/kangmg/rmsd_ipython/blob/master/rmsd_ipython.ipynb\" target="_blank">
+      <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+    </a>
+
+
 Calculate Root-mean-square deviation (RMSD) of Two Molecules Using Rotation
-===========================================================================
+---------------------------------------------------------------------------
 
 The root-mean-square deviation (RMSD) is calculated, using Kabsch algorithm
 (1976) or Quaternion algorithm (1991) for rotation, between two Cartesian
