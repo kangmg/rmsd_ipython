@@ -1,5 +1,4 @@
-IPython compatible RMSD function
-================================
+Try IPython compatible RMSD
 
 .. raw:: html
 
@@ -7,6 +6,7 @@ IPython compatible RMSD function
       <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
     </a>
 
+=====================
 
 Calculate Root-mean-square deviation (RMSD) of Two Molecules Using Rotation
 ---------------------------------------------------------------------------
