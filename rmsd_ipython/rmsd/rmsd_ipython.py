@@ -18,9 +18,9 @@ modification, are permitted provided that the following conditions are met:
 PROJECT_PAGE  = "https://github.com/kangmg/rmsd_ipython"
 
 
-from rmsd import centroid, check_reflections , get_coordinates_xyz_from_string # utilities
-from rmsd import quaternion_rmsd, kabsch_rmsd, rmsd # rmsd
-from rmsd import reorder_hungarian, reorder_inertia_hungarian, reorder_brute, reorder_distance # reorder
+from .rmsd import centroid, check_reflections , get_coordinates_xyz_from_string # utilities
+from .rmsd import quaternion_rmsd, kabsch_rmsd, rmsd # rmsd
+from .rmsd import reorder_hungarian, reorder_inertia_hungarian, reorder_brute, reorder_distance # reorder
 import copy
 import pandas as pd
 import numpy as np
