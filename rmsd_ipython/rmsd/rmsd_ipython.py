@@ -154,7 +154,7 @@ def get_rmsd(P_str: str, Q_str: str, rotation_method: str = None,
     return result_rmsd
 
 
-def RMSD_TABLE(P_str:str, Q_str:str, exclude_None_option:bool=True, return_None:bool=True):
+def RMSD_TABLE(P_str:str, Q_str:str, exclude_None_option:bool=True, return_None:bool=True, round_digit:str|int="full"):
   '''
   Description
   -----------
@@ -166,6 +166,7 @@ def RMSD_TABLE(P_str:str, Q_str:str, exclude_None_option:bool=True, return_None:
     - Q_str (str) : XYZ string representing the second molecular structure.
     - exclude_None_option (bool) : Whether to exclude None options in rotation and reorder methods.
     - return_None (bool) : Whether to return the RMSD tables or display them.
+    - round_digit (str|int) : N for round(RMSD, N). 
 
   Returns
   -------
@@ -212,11 +213,17 @@ def RMSD_TABLE(P_str:str, Q_str:str, exclude_None_option:bool=True, return_None:
   include_Hydrogen = pd.DataFrame(columns=["Rotation", "Reorder", "ignore_H", "RMSD"])
   exclude_Hydrogen = pd.DataFrame(columns=["Rotation", "Reorder", "ignore_H", "RMSD"])
   
-  # compute rmsd
+  # calculate rmsd
   for rotation_option in ROTATION_METHODS:
     for reorder_option in REORDER_METHODS:
       for ignore_H in [True, False]:
         RMSD = get_rmsd(P_str, Q_str, rotation_method=rotation_option, reorder_method = reorder_option, ignore_hydrogen=ignore_H)
+        if round_digit == "full":
+          pass
+        elif (type(round_digit) == int) and (round_digit > 0):
+          RMSD = round(RMSD, round_digit)
+        else:
+           raise ValueError(f"round_digit expected positive integer, but got {round_digit}")
         new_row = pd.DataFrame([{"Rotation": rotation_option, "Reorder": reorder_option, "ignore_H": ignore_H, "RMSD": RMSD}], columns=["Rotation", "Reorder", "ignore_H", "RMSD"])
         if ignore_H == True:
           exclude_Hydrogen = pd.concat([exclude_Hydrogen, new_row], ignore_index=True)
@@ -238,11 +245,24 @@ def RMSD_TABLE(P_str:str, Q_str:str, exclude_None_option:bool=True, return_None:
     return include_Hydrogen, exclude_Hydrogen
 
 
-def voting_RMSD(P_str:str, Q_str:str, exclude_None_option:bool=True):
+def voting_RMSD(P_str:str, Q_str:str, exclude_None_option:bool=True, round_digit:str|int="full"):
   """
-    Calculating RMSD values with all available options and selecting the most frequently occurring one.
+  Description
+  -----------
+  Calculating RMSD values with all available options and selecting the most frequently occurring one.
+
+  Parameters
+  ----------
+    - P_str (str) : XYZ string representing the first molecular structure.
+    - Q_str (str) : XYZ string representing the second molecular structure.
+    - exclude_None_option (bool) : Whether to exclude None options in rotation and reorder methods.
+    - round_digit (str|int) : N for round(RMSD, N). 
+
+  Returns
+  -------
+    - voted RMSD(float) 
   """
-  icld_df, ecld_df = RMSD_TABLE(P_str, Q_str, exclude_None_option, return_None=False)
+  icld_df, ecld_df = RMSD_TABLE(P_str, Q_str, exclude_None_option, return_None=False, round_digit=round_digit)
   icld_H_voting_RMSD = icld_df.data["RMSD"].value_counts().idxmax()
   ecld_H_voting_RMSD = ecld_df.data["RMSD"].value_counts().idxmax()
   return {"with_H" : icld_H_voting_RMSD, "without_H" : ecld_H_voting_RMSD}
