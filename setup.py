@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_namespace_packages
 
 setup(
     name='rmsd_ipython',
@@ -9,8 +9,8 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',  
     url='https://github.com/kangmg/rmsd_ipython',
-    license="BSD-2-Clause",
     keywords=['chemistry','computational chemistry','similarity', 'rmsd'],
+    packages=find_namespace_packages(),
     install_requires=[
         "numpy",
         "scipy",
