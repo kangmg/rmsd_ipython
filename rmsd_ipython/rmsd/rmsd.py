@@ -1675,6 +1675,16 @@ def get_coordinates_xyz(
 
     return atoms, V
 
+# custom funciton
+def get_coordinates_xyz_from_string(xyz_string, return_atoms_as_int=False):
+    """
+    get_coordinates_xyz from xyz string
+    """
+    lines = xyz_string.splitlines()
+
+    atoms, V = get_coordinates_xyz_lines(lines, return_atoms_as_int=return_atoms_as_int)
+
+    return atoms, V
 
 def parse_arguments(arguments: Optional[Union[str, List[str]]] = None) -> argparse.Namespace:
 
