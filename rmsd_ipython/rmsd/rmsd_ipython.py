@@ -189,8 +189,6 @@ def RMSD_TABLE(P_str:str, Q_str:str, exclude_None_option:bool=True, return_None:
   
   >>> RMSD_TABLE(F2_opt, F2_pre, exclude_None_option=False, return_None=True)
   '''
-  from rmsd_ipython import AVAILABLE_ROTATION_METHODS
-  from rmsd_ipython import AVAILABLE_REORDER_METHODS
   warnings.filterwarnings("ignore")
 
   # inner function for styling
