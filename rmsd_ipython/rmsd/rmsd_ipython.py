@@ -25,6 +25,9 @@ import copy
 import pandas as pd
 import numpy as np
 import warnings
+import seaborn as sns
+import itertools
+import matplotlib.pyplot as plt
 
 
 # available methods option
@@ -54,9 +57,9 @@ def get_rmsd(P_str: str, Q_str: str, rotation_method: str = None,
     ----------
       - P_str(str) : xyz format string
       - Q_str(str) : xyz format string
-      - rotation_method:(str) :
-      - reorder_method(str) :
-      - ignore_hydrogen(bool) :
+      - rotation_method:(str) : Rotation method. Default is None.
+      - reorder_method(str) : Reorder method. Default is None.
+      - ignore_hydrogen(bool) : whether exclude hydrogen atoms
 
     Returns
     -------
@@ -266,3 +269,45 @@ def voting_RMSD(P_str:str, Q_str:str, exclude_None_option:bool=True, round_digit
   icld_H_voting_RMSD = icld_df.data["RMSD"].value_counts().idxmax()
   ecld_H_voting_RMSD = ecld_df.data["RMSD"].value_counts().idxmax()
   return {"with_H" : icld_H_voting_RMSD, "without_H" : ecld_H_voting_RMSD}
+
+
+def rmsd_heatmap(xyz_set:dict, **kwds):
+  """
+  Description
+  -----------
+  Generates a heatmap of Root Mean Square Deviation (RMSD) values for a given set of molecular coordinates.
+    
+  Parameters:
+  ----------
+  - xyz_set (dict) : A dictionary where keys are label (e.g., method name) and values are xyz format string.
+  - **kwds (dict) : plot keyword arguments
+    - title (str) : title of the heatmap
+    - cmap (str) : Colormap used for the heatmap
+    - vmin (float) : colorbar min
+    - vmax (float) : colorbar max
+    - xylabel (str) : xlabel, ylabel
+  """
+  # parsing plot kwards
+  title = kwds.get("title", "Molecular RMSD Heatmap")
+  cmap = kwds.get("cmap", "Blues")
+  vmin = kwds.get("vmin", None)
+  vmax = kwds.get("vmax", None)
+  xylabel = kwds.get("xylabel", None)
+  
+  # seperate xyz data and labels
+  labels = xyz_set.keys()
+  coordinates = xyz_set.values()
+  
+  # calculate RMSD and makes RMSD matrix
+  xyz_pair = itertools.product(coordinates, repeat=2)
+  RMSD_result = np.array(list(get_rmsd(xyz1, xyz2) for xyz1, xyz2 in xyz_pair))
+  NumOfXYZ = len(labels)
+  heatmap_matrix = RMSD_result.reshape(NumOfXYZ, NumOfXYZ)
+  
+  # plot heatmap
+  mask = np.tril(np.ones_like(heatmap_matrix, dtype=bool))
+  ax = sns.heatmap(heatmap_matrix, annot=True, linewidth=.5, cmap=cmap, mask=~mask, xticklabels=labels, yticklabels=labels, vmin=vmin, vmax=vmax)
+  ax.set_xlabel(xylabel)
+  ax.set_ylabel(xylabel)
+  ax.set_title(title)
+  plt.show()
