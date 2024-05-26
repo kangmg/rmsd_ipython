@@ -271,7 +271,32 @@ def voting_RMSD(P_str:str, Q_str:str, exclude_None_option:bool=True, round_digit
   return {"with_H" : icld_H_voting_RMSD, "without_H" : ecld_H_voting_RMSD}
 
 
-def rmsd_heatmap(xyz_set:dict, **kwds):
+def normalize_matrix(matrix:np.array):
+    """
+      Normalize the given matrix to have values between 0 and 1, excluding the diagonal values.
+    """
+    # mask the diagonal values
+    mask = ~np.eye(matrix.shape[0], dtype=bool)
+    
+    # flatten matrix excluding diagonal values
+    flatten_wo_diag = matrix[mask]
+    
+    # Normalize the non-diagonal values
+    min_val = flatten_wo_diag.min()
+    max_val = flatten_wo_diag.max()
+
+    # zero division error
+    if (max_val - min_val) == 0: raise ValueError("Min Max values are same.")
+
+    normalized_flatten_wo_diag = (flatten_wo_diag - min_val) / (max_val - min_val)
+    
+    # normalized matrix
+    normalized_matrix = matrix.copy()
+    normalized_matrix[mask] = normalized_flatten_wo_diag
+    
+    return normalized_matrix
+
+def rmsd_heatmap(xyz_set:dict, normalize=False, **kwds):
   """
   Description
   -----------
@@ -280,19 +305,22 @@ def rmsd_heatmap(xyz_set:dict, **kwds):
   Parameters:
   ----------
   - xyz_set (dict) : A dictionary where keys are label (e.g., method name) and values are xyz format string.
+  - normalize (bool) : normalize RMSD value from 0 to 1.
   - **kwds (dict) : plot keyword arguments
     - title (str) : title of the heatmap
     - cmap (str) : Colormap used for the heatmap
     - vmin (float) : colorbar min
     - vmax (float) : colorbar max
     - xylabel (str) : xlabel, ylabel
+    - fmt (str): Format string for annotations. Default is ".3f".
   """
   # parsing plot kwards
-  title = kwds.get("title", "Molecular RMSD Heatmap")
+  title = kwds.get("title", "Molecular RMSD Heatmap" if not normalize else "Normalized Molecular RMSD Heatmap")
   cmap = kwds.get("cmap", "Blues")
   vmin = kwds.get("vmin", None)
   vmax = kwds.get("vmax", None)
   xylabel = kwds.get("xylabel", None)
+  fmt = kwds.get("fmt", ".3f")
   
   # seperate xyz data and labels
   labels = xyz_set.keys()
@@ -304,9 +332,13 @@ def rmsd_heatmap(xyz_set:dict, **kwds):
   NumOfXYZ = len(labels)
   heatmap_matrix = RMSD_result.reshape(NumOfXYZ, NumOfXYZ)
   
+  # normalize matrix
+  if normalize:
+     heatmap_matrix = normalize_matrix(heatmap_matrix)
+
   # plot heatmap
-  mask = np.tril(np.ones_like(heatmap_matrix, dtype=bool))
-  ax = sns.heatmap(heatmap_matrix, annot=True, linewidth=.5, cmap=cmap, mask=~mask, xticklabels=labels, yticklabels=labels, vmin=vmin, vmax=vmax)
+  mask = np.triu(np.ones_like(heatmap_matrix, dtype=bool))
+  ax = sns.heatmap(heatmap_matrix, annot=True, linewidth=.5, cmap=cmap, mask=mask, xticklabels=labels, yticklabels=labels, fmt=fmt, vmin=vmin, vmax=vmax)
   ax.set_xlabel(xylabel)
   ax.set_ylabel(xylabel)
   ax.set_title(title)
