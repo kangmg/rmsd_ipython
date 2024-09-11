@@ -11,7 +11,7 @@ Please refer to the [rmsd](https://github.com/charnley/rmsd) for more details ab
 
 ## Usage
 ```python
-from rmsd_ipython import voting_RMSD
+from rmsd_ipython import get_rmsd
 
 xyz1 = """6
 
@@ -31,12 +31,6 @@ H    0.705205731485   -0.514578303328   -1.222045485239
 H    0.705205731485   -0.514578303328    1.222045485239
 Br   -0.000130084759    2.161823224660    0.000000000000"""
 
-RMSD_dic = voting_RMSD(xyz1, xyz2, round_digit=7)
-
-RMSD_with_H = RMSD_dic["with_H"]
-RMSD_without_H = RMSD_dic["without_H"]
-
-print(f"RMSD_with_H     : {RMSD_with_H}")
-print(f"RMSD_without_H  : {RMSD_without_H}")
+get_rmsd(xyz1, xyz2, rotation_method="quaternion", reorder_method="hungarian", ignore_hydrogen=False)
 ```
 
