@@ -28,7 +28,7 @@ import warnings
 import seaborn as sns
 import itertools
 import matplotlib.pyplot as plt
-from ase.import Atoms
+from ase import Atoms
 
 # available methods option
 AVAILABLE_ROTATION_METHODS = ['kabsch', 'quaternion', None]
