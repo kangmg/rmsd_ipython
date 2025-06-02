@@ -50,7 +50,7 @@ def get_coordinates_xyz_from_atoms(atoms, return_atoms_as_int:bool=False):
     """
     get xyz coordinates and symbols from ase.Atoms
     """
-    _atoms = atoms.numbers.tolist() if return_atoms_as_int else atoms.get_chemical_symbols()
+    _atoms = atoms.numbers if return_atoms_as_int else np.array(atoms.get_chemical_symbols())
     positions = atoms.positions
     return _atoms, positions
    
