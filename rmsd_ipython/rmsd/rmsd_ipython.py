@@ -28,7 +28,7 @@ import warnings
 import seaborn as sns
 import itertools
 import matplotlib.pyplot as plt
-
+from ase.import Atoms
 
 # available methods option
 AVAILABLE_ROTATION_METHODS = ['kabsch', 'quaternion', None]
@@ -46,6 +46,14 @@ ____________.___________________________________________________________________
 
 """, sep="")
 
+def get_coordinates_xyz_from_atoms(atoms, return_atoms_as_int:bool=False):
+    """
+    get xyz coordinates and symbols from ase.Atoms
+    """
+    _atoms = atoms.numbers.tolist() if return_atoms_as_int else atoms.get_chemical_symbols()
+    positions = atoms.positions
+    return _atoms, positions
+   
 
 def get_rmsd(P_str: str, Q_str: str, rotation_method: str = None, 
              reorder_method: str = None, ignore_hydrogen: bool = False)->float:
@@ -81,9 +89,13 @@ def get_rmsd(P_str: str, Q_str: str, rotation_method: str = None,
     
     0.13
     '''
-
-    P_all_atoms, P_all = get_coordinates_xyz_from_string(P_str, return_atoms_as_int=True)
-    Q_all_atoms, Q_all = get_coordinates_xyz_from_string(Q_str, return_atoms_as_int=True)
+    if isinstance(P_str, str) and isinstance(Q_str, str):
+        P_all_atoms, P_all = get_coordinates_xyz_from_string(P_str, return_atoms_as_int=True)
+        Q_all_atoms, Q_all = get_coordinates_xyz_from_string(Q_str, return_atoms_as_int=True)
+    
+    elif isinstance(P_str, Atoms) and isinstance(Q_str, Atoms):
+        P_all_atoms, P_all = get_coordinates_xyz_from_atoms(P_str, return_atoms_as_int=True)
+        Q_all_atoms, Q_all = get_coordinates_xyz_from_atoms(Q_str, return_atoms_as_int=True)
 
     # Set local view
     p_view = None
